@@ -21,5 +21,18 @@ async fn main() {
 
     let mod_res =  api_client::get_mod(api_client::Service::Modrinth, &args[1]).await;
 
-    println!("{}", mod_res.expect("Request failed"));
+    if !mod_res.is_ok() {
+        println!("Couldn't complete request.. ?");
+        return;
+    }
+
+    print_search(&mod_res.unwrap().hits);
+}
+
+fn print_search(hits: &[api_client::Hit]) {
+    for hit in hits {
+        println!("==");
+        print!("{}\n\n{}\n", &hit.title, &hit.description);
+        print!("Uploaded by: {}\n", &hit.author);
+    }
 }
