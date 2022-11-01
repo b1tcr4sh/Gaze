@@ -17,7 +17,9 @@ pub enum Operation {
     Sync,
     Generate,
     Profile(ProfileCommand),
-    List
+    List,
+    Search(SearchCommand),
+    Info(SearchCommand)
 }
 
 #[derive(Debug, Args)]
@@ -49,4 +51,11 @@ pub struct CreateSubcommand {
 #[derive(Debug, Args)]
 pub struct DeleteSubcommand {
     name: String
+}
+
+#[derive(Debug, Args)]
+pub struct SearchCommand {
+    name: String,
+    #[arg(short)]
+    service: String
 }

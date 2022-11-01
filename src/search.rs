@@ -10,7 +10,18 @@ pub enum Service {
 }
 
 
-pub async fn get_mod(_service: Service, query: &String) -> Result<SearchResponse> {
+impl SearchResponse {
+    pub fn Print(&self) {
+        println!("Showing {} of {} results:", self.limit, self.total_hits);
+
+        for hit in self.hits {
+            println!("{} / {} (Latest) -- {}", hit.title, hit.versions[0], hit.author);
+            println!("  {}", hit.description);
+        }
+    }
+}
+
+pub async fn get(_service: Service, query: &String) -> Result<SearchResponse> {
     let base_url: &str = "https://api.modrinth.com/v2/search?q=";
     let request: String = String::from(base_url) + &query;
 
