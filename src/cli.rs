@@ -18,8 +18,14 @@ pub enum Operation {
     Generate,
     Profile(ProfileCommand),
     List,
-    Search(SearchCommand),
-    Info(SearchCommand)
+    Search {
+        name: String
+    },
+    Info {
+        name: String,
+        #[arg(short)]
+        service: String
+    }
 }
 
 #[derive(Debug, Args)]
@@ -51,11 +57,4 @@ pub struct CreateSubcommand {
 #[derive(Debug, Args)]
 pub struct DeleteSubcommand {
     name: String
-}
-
-#[derive(Debug, Args)]
-pub struct SearchCommand {
-    name: String,
-    #[arg(short)]
-    service: String
 }
