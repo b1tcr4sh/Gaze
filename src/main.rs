@@ -1,5 +1,6 @@
 mod search;
 mod cli;
+mod stargate;
 
 use clap::Parser;
 use cli::{WayfarerCli, Operation};
@@ -7,7 +8,6 @@ use cli::{WayfarerCli, Operation};
 
 #[tokio::main]
 async fn main() {
-
     let args: WayfarerCli = WayfarerCli::parse();
 
     match args.operation {
