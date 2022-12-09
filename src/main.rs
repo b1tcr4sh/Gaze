@@ -6,7 +6,7 @@ use clap::Parser;
 use cli::{WayfarerCli, Operation};
 
 use self::stargate::profile_model::ProfileInfo;
-use self::stargate::Loaders;
+use self::stargate::LOADERS;
 
 
 #[tokio::main]
@@ -40,10 +40,10 @@ async fn main() {
 fn print_profile(info: &ProfileInfo) {
     match info.is_server_side {
         true => {
-            println!("Profile {0}: ({1}) -> {2} {3}", info.name, "server", Loaders[info.loader as usize], info.minecraft_version);
+            println!("Profile {0}: ({1}) -> {2} {3}", info.name, "server", LOADERS[info.loader as usize], info.minecraft_version);
         },
         false => {
-            println!("Profile {0}: ({1}) -> {2} {3}", info.name, "client", Loaders[info.loader as usize], info.minecraft_version);
+            println!("Profile {0}: ({1}) -> {2} {3}", info.name, "client", LOADERS[info.loader as usize], info.minecraft_version);
         }
     }
 }

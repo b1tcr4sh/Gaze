@@ -7,7 +7,7 @@ use self::profile_mess_model::*;
 pub mod profile_model;
 mod profile_mess_model;
 
-pub static Loaders: [&str; 7] = ["unknown", "Forge", "Fabric", "Quilt", "Lite Loader", "Rift", "ModLoader"];
+pub static LOADERS: [&str; 7] = ["unknown", "Forge", "Fabric", "Quilt", "Lite Loader", "Rift", "ModLoader"];
 
 #[dbus_proxy(
     interface = "org.mercurius.profile",
