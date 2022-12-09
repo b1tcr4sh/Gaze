@@ -3,11 +3,11 @@ use serde::{Serialize, Deserialize};
 
 #[derive(Serialize, Deserialize, Debug, Type, PartialEq)]
 pub struct ProfileInfo {
-    name: String,
-    minecraft_version: String,
-    is_server_side: String,
-    loader: i32,
-    file_path: String
+    pub name: String,
+    pub minecraft_version: String,
+    pub is_server_side: String,
+    pub loader: i32,
+    pub file_path: String
 }
 #[derive(Serialize, Deserialize, Debug, Type, PartialEq)]
 pub struct ValidityReport {

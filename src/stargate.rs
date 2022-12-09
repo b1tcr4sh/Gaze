@@ -1,5 +1,7 @@
+use clap::builder;
 use zbus::dbus_proxy;
 use zbus::Connection;
+use zbus::export::futures_util::TryFutureExt;
 use zvariant::ObjectPath;
 
 use self::profile_model::*;
@@ -34,8 +36,51 @@ pub async fn Connect() -> Connection {
         }
     }
 }
-pub async fn GetProfiles(&connection: Connection ) -> Vec<ProfileProxy> {
-    let Ok(messenger) = ProfileMessengerProxy::new(connection).await;
+pub async fn GetProfileMessenger<'a>(connection: &Connection) -> ProfileMessengerProxy<'a> {
+    let result = ProfileMessengerProxy::new(connection).await;
 
-    profiles = messenger.ListProfiles();
+    match result {
+        Ok(messenger) => {
+            return messenger;
+        },
+        Err(why) => {
+            panic!("{:?}", why);
+        }
+    }
+}
+
+pub async fn GetProfiles<'a>(connection: &'a Connection, messenger: ProfileMessengerProxy<'a>) -> Vec<ProfileProxy<'a>> {
+    let profiles_paths = messenger.ListProfiles().await;
+    let mut profiles: Vec<ProfileProxy<'a>> = Vec::new();
+
+    match profiles_paths {
+        Ok(paths) => {
+            for profile in paths {
+                let builder = ProfileProxy::builder(connection).path(profile);       
+                
+                match builder {
+                    Ok(builder) => {
+                        let profile = builder.build().await;
+
+                        match profile {
+                            Ok(proxy) => {
+                                profiles.insert(0, proxy);
+                            },
+                            Err(why) => {
+                                panic!("{:?}", why);
+                            }
+                        }
+                    },
+                    Err(why) => {
+                        panic!("{:?}", why);
+                    }
+                }
+            }
+        },
+        Err(why) => {
+            panic!("{:?}", why);
+        }
+    }
+
+    profiles
 }
