@@ -5,8 +5,8 @@ use serde::{Serialize, Deserialize};
 pub struct ProfileInfo {
     pub name: String,
     pub minecraft_version: String,
-    pub is_server_side: String,
-    pub loader: i32,
+    pub is_server_side: bool,
+    pub loader: i32, // Tmds.Dbus serializes enums as i32, zvariant expects u32 for enums
     pub file_path: String
 }
 #[derive(Serialize, Deserialize, Debug, Type, PartialEq)]
@@ -35,7 +35,7 @@ pub enum Repo {
 }
 #[derive(Serialize, Deserialize, Debug, Type, PartialEq)]
 pub enum Loader {
-    Unknown, Forge, Fabric, Quilt, Liteloader, Rift, Modloader
+    Unknown = 0, Forge = 1, Fabric = 2, Quilt = 3, Liteloader = 4, Rift = 5, Modloader = 6
 }
 #[derive(Serialize, Deserialize, Debug, Type, PartialEq)]
 pub enum ClientDependency {

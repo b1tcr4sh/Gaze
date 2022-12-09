@@ -5,6 +5,9 @@ mod stargate;
 use clap::Parser;
 use cli::{WayfarerCli, Operation};
 
+use self::stargate::profile_model::ProfileInfo;
+use self::stargate::Loaders;
+
 
 #[tokio::main]
 async fn main() {
@@ -20,16 +23,27 @@ async fn main() {
         Operation::Generate => todo!(),
         Operation::Profile(_) => todo!(),
         Operation::List => {
-            let connection = stargate::Connect().await;
-            let messenger = stargate::GetProfileMessenger(&connection).await;
-            let profiles = stargate::GetProfiles(&connection, messenger).await;
+            let connection = stargate::connect().await;
+            let messenger = stargate::get_profile_messenger(&connection).await;
+            let profiles = stargate::get_profiles(&connection, messenger).await;
 
             for profile in profiles {
                 let info = profile.GetProfileInfo().await.unwrap();
 
-                println!("{0} / {1}", info.name, info.minecraft_version);
+                print_profile(&info);
             }
         },
         Operation::Info {name: _, service: _ } => todo!(),
+    }
+}
+
+fn print_profile(info: &ProfileInfo) {
+    match info.is_server_side {
+        true => {
+            println!("Profile {0}: ({1}) -> {2} {3}", info.name, "server", Loaders[info.loader as usize], info.minecraft_version);
+        },
+        false => {
+            println!("Profile {0}: ({1}) -> {2} {3}", info.name, "client", Loaders[info.loader as usize], info.minecraft_version);
+        }
     }
 }

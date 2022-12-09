@@ -1,19 +1,17 @@
-use clap::builder;
 use zbus::dbus_proxy;
 use zbus::Connection;
-use zbus::export::futures_util::TryFutureExt;
-use zvariant::ObjectPath;
 
 use self::profile_model::*;
 use self::profile_mess_model::*;
 
-mod profile_model;
+pub mod profile_model;
 mod profile_mess_model;
+
+pub static Loaders: [&str; 7] = ["unknown", "Forge", "Fabric", "Quilt", "Lite Loader", "Rift", "ModLoader"];
 
 #[dbus_proxy(
     interface = "org.mercurius.profile",
-    default_service = "org.mercurius.profile",
-    default_path = "/org/mercurius/profile/"
+    default_service = "org.mercurius.profile"
 )]
 trait Profile {
     fn GetProfileInfo(&self) -> zbus::Result<ProfileInfo>;
@@ -24,7 +22,7 @@ trait Profile {
     fn Verify(&self) -> zbus::Result<ValidityReport>;
 }
 
-pub async fn Connect() -> Connection {
+pub async fn connect() -> Connection {
     let connection = Connection::session().await;
 
     match connection {
@@ -36,7 +34,7 @@ pub async fn Connect() -> Connection {
         }
     }
 }
-pub async fn GetProfileMessenger<'a>(connection: &Connection) -> ProfileMessengerProxy<'a> {
+pub async fn get_profile_messenger<'a>(connection: &'a Connection) -> ProfileMessengerProxy<'a> {
     let result = ProfileMessengerProxy::new(connection).await;
 
     match result {
@@ -49,14 +47,14 @@ pub async fn GetProfileMessenger<'a>(connection: &Connection) -> ProfileMessenge
     }
 }
 
-pub async fn GetProfiles<'a>(connection: &'a Connection, messenger: ProfileMessengerProxy<'a>) -> Vec<ProfileProxy<'a>> {
-    let profiles_paths = messenger.ListProfiles().await;
+pub async fn get_profiles<'a>(connection: &'a Connection, messenger: ProfileMessengerProxy<'a>) -> Vec<ProfileProxy<'a>> {
+    let profiles_names = messenger.ListProfiles().await;
     let mut profiles: Vec<ProfileProxy<'a>> = Vec::new();
 
-    match profiles_paths {
-        Ok(paths) => {
-            for profile in paths {
-                let builder = ProfileProxy::builder(connection).path(profile);       
+    match profiles_names {
+        Ok(names) => {
+            for profile in names {
+                let builder = ProfileProxy::builder(connection).path(["/org/mercurius/profile/", &profile].join(""));       
                 
                 match builder {
                     Ok(builder) => {
